@@ -1,0 +1,264 @@
+<script>
+// Tour functionality with dynamic colors
+        let currentRoom = 0;
+        const rooms = document.querySelectorAll('.room');
+        const indicators = document.querySelectorAll('.room-indicator');
+        const progressFill = document.querySelector('.progress-fill');
+        const progressTrack = document.querySelector('.progress-track');
+
+        // Color themes for each section
+        const roomThemes = {
+            0: { color: '#4F46E5', rgba: 'rgba(79, 70, 229', gradient: 'linear-gradient(180deg, #4F46E5, #6366F1)' },
+            1: { color: '#4F46E5', rgba: 'rgba(79, 70, 229', gradient: 'linear-gradient(180deg, #4F46E5, #6366F1)' },
+            2: { color: '#F97316', rgba: 'rgba(249, 115, 22', gradient: 'linear-gradient(180deg, #F97316, #FB923C)' },
+            3: { color: '#10B981', rgba: 'rgba(16, 185, 129', gradient: 'linear-gradient(180deg, #10B981, #34D399)' }
+        };
+        function updateRoom(index) {
+            if (index < 0 || index >= rooms.length) return;
+            rooms.forEach(room => room.classList.remove('active'));
+            indicators.forEach(indicator => indicator.classList.remove('active'));
+            rooms[index].classList.add('active');
+            indicators[index].classList.add('active');
+            const progressPercentage = ((index + 1) / rooms.length) * 100;
+            const theme = roomThemes[index];
+            progressFill.style.height = progressPercentage + '%';
+            progressFill.style.background = theme.gradient;
+            progressFill.style.boxShadow = `
+                0 0 25px ${theme.rgba}, 0.8),
+                inset 0 0 10px rgba(255, 255, 255, 0.2)
+            `;
+            progressTrack.style.background = `${theme.rgba}, 0.2)`;
+            progressTrack.style.boxShadow = `inset 0 0 15px ${theme.rgba}, 0.3)`;
+            currentRoom = index;
+        }
+
+        // Scroll-based room switching
+        let isScrolling = false;
+        window.addEventListener('scroll', () => {
+            if (isScrolling) return;
+            const scrollTop = window.pageYOffset;
+            const viewportHeight = window.innerHeight;
+            const roomIndex = Math.min(Math.round(scrollTop / viewportHeight), rooms.length - 1);
+            if (roomIndex !== currentRoom) {
+                updateRoom(roomIndex);
+            }
+        });
+
+        // Click handlers for room indicators
+        indicators.forEach((indicator, index) => {
+            indicator.addEventListener('click', () => {
+                isScrolling = true;
+                const viewportHeight = window.innerHeight;
+                const sectionMultipliers = {
+                    0: 1.0,
+                    1: 1.20,
+                    2: 1.10,
+                    3: 1.07
+                };
+                const targetScrollY = index * viewportHeight * sectionMultipliers[index];
+                window.scrollTo({
+                    top: targetScrollY,
+                    behavior: 'smooth'
+                });
+                updateRoom(index);
+                setTimeout(() => {
+                    isScrolling = false;
+                }, 1200);
+            });
+        });
+
+        // Initialize
+        updateRoom(0);
+
+        // Add click handlers for interactive elements
+        setTimeout(() => {
+            const exploreButtons = document.querySelectorAll('.explore-btn');
+            exploreButtons.forEach(button => {
+                button.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const buttonText = button.textContent.trim();
+                    if (buttonText === 'EXPLORE PROJECT') {
+                        window.open('https://www.jasongarciadesign.com/sobrsafe');
+                    } else if (buttonText === 'VIEW CAMPAIGNS') {
+                        window.open('https://www.jasongarciadesign.com/storied');
+                    } else if (buttonText === 'VIEW MOTION WORK') {
+                        window.open('https://www.jasongarciadesign.com/rain-rock-casino');
+                    }
+                });
+            });
+        }, 100); 
+        
+const avatar = document.getElementById('scrollingAvatar');
+const avatarBg = document.getElementById('avatarBg');
+function updateAvatarPosition() {
+    const scrollY = window.pageYOffset;
+    const windowHeight = window.innerHeight;
+    const documentHeight = document.body.scrollHeight;
+
+    // Wandering position (unchanged)
+    if (documentHeight > windowHeight) {
+        const scrollProgress = scrollY / (documentHeight - windowHeight);
+        const minX = 120, maxX = window.innerWidth - avatar.offsetWidth - 20;
+        const minY = 320, maxY = windowHeight - avatar.offsetHeight - 20;
+        const wanderRange = Math.min(100, maxX - minX);
+        const newY = minY + scrollProgress * (maxY - minY);
+        const newX = minX + Math.sin(scrollProgress * Math.PI * 2) * (wanderRange);
+
+        avatar.style.left = Math.max(minX, Math.min(maxX, newX)) + 'px';
+        avatar.style.top = Math.max(minY, Math.min(maxY, newY)) + 'px';
+    } else {
+        avatar.style.left = '120px';
+        avatar.style.top = '320px';
+    }
+
+    // Enhanced section detection with better colors
+    const sectionHeight = windowHeight;
+    const currentSection = Math.floor(scrollY / sectionHeight);
+    
+    // Enhanced color themes
+    const themes = [
+        { bg: 'rgba(79,70,229,1)', shadow: '0 0 0 2px rgba(79,70,229,0.4), 0 0 30px 8px rgba(79,70,229,0.2)' },
+        { bg: 'rgba(79,70,229,1)', shadow: '0 0 0 2px rgba(79,70,229,0.4), 0 0 30px 8px rgba(79,70,229,0.2)' },
+        { bg: 'rgba(249,115,22,1)', shadow: '0 0 0 2px rgba(249,115,22,0.4), 0 0 30px 8px rgba(249,115,22,0.2)' },
+        { bg: 'rgba(16,185,129,1)', shadow: '0 0 0 2px rgba(16,185,129,0.4), 0 0 30px 8px rgba(16,185,129,0.2)' }
+    ];
+
+    const themeIndex = Math.min(currentSection, themes.length - 1);
+    const currentTheme = themes[themeIndex];
+
+    // Apply the enhanced theme
+    avatarBg.style.background = currentTheme.bg;
+    avatarBg.style.boxShadow = currentTheme.shadow;
+
+    // Theme switching by section
+    avatar.classList.remove('sobr-safe-theme', 'campaigns-theme', 'motion-theme');
+    if (currentSection === 0 || currentSection === 1) {
+        avatar.classList.add('sobr-safe-theme');
+    } else if (currentSection === 2) {
+        avatar.classList.add('campaigns-theme');
+    } else if (currentSection >= 3) {
+        avatar.classList.add('motion-theme');
+    }
+}
+window.addEventListener('scroll', updateAvatarPosition);
+window.addEventListener('resize', updateAvatarPosition);
+window.addEventListener('load', updateAvatarPosition);
+        
+// Mobile tour functionality
+function initMobileTour() {
+    // Only run on mobile
+    if (window.innerWidth <= 768) {
+        // Intersection Observer for mobile animations
+        const mobileObserverOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const mobileObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('in-view');
+                    
+                    // Update nav dots
+                    const sectionIndex = entry.target.dataset.section;
+                    if (sectionIndex !== undefined) {
+                        updateMobileNavDots(parseInt(sectionIndex));
+                        updateMobileAvatarTheme(parseInt(sectionIndex));
+                    }
+                }
+            });
+        }, mobileObserverOptions);
+
+        // Observe all mobile sections
+        document.querySelectorAll('.mobile-fade-in').forEach(el => {
+            mobileObserver.observe(el);
+        });
+
+        // Mobile navigation dot functionality
+        function updateMobileNavDots(index) {
+            document.querySelectorAll('.mobile-nav-dot').forEach((dot, i) => {
+                dot.classList.toggle('active', i === index);
+            });
+        }
+
+        // Mobile avatar theme switching
+        function updateMobileAvatarTheme(sectionIndex) {
+            const avatar = document.querySelector('.mobile-floating-avatar');
+            const themes = [
+                { border: '#4F46E5', shadow: 'rgba(79, 70, 229, 0.4)' },
+                { border: '#4F46E5', shadow: 'rgba(79, 70, 229, 0.4)' },
+                { border: '#F97316', shadow: 'rgba(249, 115, 22, 0.4)' },
+                { border: '#10B981', shadow: 'rgba(16, 185, 129, 0.4)' }
+            ];
+            
+            const theme = themes[sectionIndex] || themes[0];
+            if (avatar) {
+                avatar.style.borderColor = theme.border;
+                avatar.style.boxShadow = `0 0 20px ${theme.shadow}`;
+            }
+        }
+
+        // Mobile nav dot click handlers
+        document.querySelectorAll('.mobile-nav-dot').forEach((dot, index) => {
+            dot.addEventListener('click', () => {
+                const targetSection = document.querySelector(`[data-section="${index}"]`);
+                if (targetSection) {
+                    targetSection.scrollIntoView({ 
+                        behavior: 'smooth',
+                        block: 'center'
+                    });
+                }
+            });
+        });
+
+        // Mobile action button handlers
+        document.querySelectorAll('.mobile-action-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                const link = button.dataset.link;
+                if (link) {
+                    window.open(link, '_blank');
+                }
+            });
+        });
+
+        // Touch gesture improvements
+        let touchStartY = 0;
+        let touchEndY = 0;
+
+        document.addEventListener('touchstart', e => {
+            touchStartY = e.changedTouches[0].screenY;
+        }, { passive: true });
+
+        document.addEventListener('touchend', e => {
+            touchEndY = e.changedTouches[0].screenY;
+            handleMobileSwipe();
+        }, { passive: true });
+
+        function handleMobileSwipe() {
+            const swipeThreshold = 50;
+            const diff = touchStartY - touchEndY;
+            
+            if (Math.abs(diff) > swipeThreshold) {
+                // Add subtle haptic feedback if available
+                if (navigator.vibrate) {
+                    navigator.vibrate(10);
+                }
+            }
+        }
+
+        // Initialize mobile tour
+        updateMobileNavDots(0);
+        updateMobileAvatarTheme(0);
+    }
+}
+
+// Initialize mobile tour on load and resize
+window.addEventListener('load', initMobileTour);
+window.addEventListener('resize', () => {
+    // Re-initialize if switching to mobile view
+    if (window.innerWidth <= 768) {
+        initMobileTour();
+    }
+});
+        
+</script>
